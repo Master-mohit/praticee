@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WhatsApp Web Clone</title>
+<link
+    href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css"
+    rel="stylesheet"
+/>
+<style>
+    /* Reset CSS */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    /* Main container */
+    .app-container {
+        display: flex;
+        height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+        flex: 0 0 300px; /* Fixed width sidebar */
+        background-color: #f2f2f2;
+        padding: 20px;
+        border-right: 1px solid #ddd;
+    }
+
+    .profile {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .profile-image {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        margin-right: 10px;
+    }
+
+    .search-bar input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    .chat-list {
+        margin-top: 20px;
+    }
+
+    .chat-item {
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+    }
+
+    /* Chat Window */
+    .chat-window {
+        flex: 1;
+        padding: 20px;
+    }
+
+    .chat-header {
+        padding-bottom: 10px;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .chat-title {
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+    .chat-input {
+        margin-top: 20px;
+        display: flex;
+    }
+
+    .chat-input input {
+        flex: 1;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    .chat-input button {
+        padding: 10px 20px;
+        margin-left: 10px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .chat-messages {
+        margin-top: 20px;
+        height: calc(100% - 140px); /* Adjust according to your layout */
+        overflow-y: auto;
+    }
+    #searching{
+        width: 33vw;
+        height: 30vw;
+        background-color: lightcoral;
+       position: absolute;
+       top: 50%;
+       left: 50%;
+       transform: translate(-50%, -50%);
+       padding: 1vw 1vw
+    }
+    #search{
+      margin-bottom: 3vw;
+    }
+    #search input{
+        width: 100%;
+        height: 40px;
+    }
+    #bottom{
+       
+        height: 60px;
+        width: 100%;
+        background-color: lightgray;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 1vw;
+    }
+    #bottom #cir{
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background-color: red;
+    }
+    #a1 h1{
+        font-size: 1.8vw;
+    }
+    
+    i{
+        font-size: 2vw;
+    }
+   
+</style>
+</head>
+<body>
+
+
+  <div id="searching">
+    <div id="search">
+        <input type="search" placeholder="search">
+    </div>
+    <div id="two">
+       <div id="user">
+        <!-- <div id="bottom">
+            <div id="cir">
+                <img src="" alt="">
+            </div>
+            <div id="a1">
+                <h1>username</h1>
+            </div>
+        </div> -->
+       </div>
+    </div>
+  
+   
+  <i onclick="close()" class="ri-close-line"></i>
+  </div>
+<div class="app-container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="profile">
+            <img src="profile-image.jpg" alt="Profile Image" class="profile-image">
+            <div class="profile-name"><%= user.username %></div>
+        </div>
+        <div class="search-bar">
+            <i onclick="open()" class="ri-user-line"></i>
+        </div>
+        <div class="chat-list">
+            <!-- Chat list items -->
+            <div class="chat-item">Chat 1</div>
+          
+            <!-- Add more chat items as needed -->
+        </div>
+    </div>
+
+    <!-- Chat Window -->
+    <div class="chat-window">
+        <div class="chat-header">
+            <div class="chat-title">Chat Title</div>
+        </div>
+        <div class="chat-messages">
+            <!-- Chat messages go here -->
+        </div>
+        <div class="chat-input">
+            <input type="text" placeholder="Type a message">
+            <button>Send</button>
+        </div>
+    </div>
+</div>
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.7/axios.min.js" integrity="sha512-NQfB/bDaB8kaSXF8E77JjhHG5PM6XVRxvHzkZiwl3ddWCEPBa23T76MuWSwAJdMGJnmQqM0VeY9kFszsrBEFrQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+ function open(){
+    document.querySelector("#searching").style.display = "initial";
+ }
+ function close(){
+    document.querySelector("#searching").style.display = "none";
+ }
+
+
+
+
+document.querySelector("#search input").addEventListener("input", async function(event){
+      const data = document.querySelector("#search input").value;
+      if(data === ""){
+          return;
+      }
+      try {
+          const response = await axios.post("/searchUsers", { data: data });
+          console.log(data);
+          displayUsers(response.data.users);
+      } catch (error) {
+          console.error(error);
+      }
+  });
+
+  
+  function displayUsers(users) {
+      const userContainer = document.querySelector("#two #user");
+      userContainer.innerHTML = ''; 
+      users.forEach(user => {
+          appendUser(user.pic, user.username, user.id);
+      });
+  }
+
+  
+  function appendUser(pic, username, id){
+      const temp =` <div onclick="addFriend(event,'${id}','${profileImage}','${username}')" id="bottom" id="${id}" >
+            <div id="cir">
+                <img src="${pic}" alt="">
+            </div>
+            <div id="a1">
+                <h1>${username}</h1>
+            </div>
+        </div>`
+      const userContainer = document.querySelector("#two #user");
+      userContainer.innerHTML += temp;
+  }
+
+
+  async function addFriend(event, id, pic, username) {
+      try {
+        const response = await axios.post('/addFriend', {
+          friendId: id
+        })
+
+        console.log("this is working")
+
+      } catch (err) {
+        console.log("this is error")
+      }
+
+    }
+
+</script>
+
